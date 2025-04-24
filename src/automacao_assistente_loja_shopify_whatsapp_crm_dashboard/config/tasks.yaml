@@ -1,0 +1,75 @@
+---
+interpret_customer_query_task:
+  description: Analyze the incoming WhatsApp message from the customer (containing
+    details like order number (e.g., '#1001'), email, or full name) to determine if
+    the query is order-related or product-related. Use context indicators such as
+    'status', 'tracking', 'product', 'buy', 'objection', etc. Instruct the conversation
+    to retrieve specific data if needed.
+  expected_output: A classification of the customer's query into either an order inquiry
+    (including identification of order number, email, or name) or a product inquiry,
+    along with extracted query details.
+  async_execution: false
+  agent: OpenAIAssistant
+shopify_order_lookup_task:
+  description: If the query is identified as order-related, use the Shopify Data Connector
+    to fetch the order details, including status and tracking code. The input details
+    (order number, customer email, or full name) are used to retrieve the order from
+    Shopify via the API using credentials {SHOPIFY_ACCESS_TOKEN}, {SHOPIFY_API_KEY},
+    {SHOPIFY_API_SECRET}, and {SHOPIFY_SHOP_URL}.
+  expected_output: Order details in JSON format containing order number, current status,
+    tracking code (if available), and other relevant information.
+  async_execution: false
+  agent: ShopifyIntegration
+  context:
+  - interpret_customer_query_task
+shopify_product_lookup_task:
+  description: If the query is identified as product-related, use the Shopify Data
+    Connector to retrieve product details from the store. This includes product name,
+    description, price, and a direct purchase link. Use search parameters based on
+    keywords from the customer's message.
+  expected_output: Product details including name, short description, price, and a
+    URL link to the product page.
+  async_execution: false
+  agent: ShopifyIntegration
+  context:
+  - interpret_customer_query_task
+generate_response_task:
+  description: 'Combine the classified query from the Customer Support Conversation
+    Specialist with data fetched from Shopify (order details or product details) to
+    generate a personalized and friendly response. The answer should include: if order-related
+    - order status and tracking code, and if product-related - product details and
+    a direct link for purchase. The response should also address any objections the
+    customer might have, persuading them to proceed with the purchase.'
+  expected_output: A complete response text that includes the order status/tracking
+    or product details with purchase link; if objections are detected, include persuasive
+    elements to overcome them.
+  async_execution: false
+  agent: OpenAIAssistant
+  context:
+  - interpret_customer_query_task
+  - shopify_order_lookup_task
+  - shopify_product_lookup_task
+send_whatsapp_response_task:
+  description: Send the generated response text through the WhatsApp API. Use the
+    credentials like GRAPH_API_TOKEN and WEBHOOK_VERIFY_TOKEN available in the environment.
+    Ensure the message is delivered to the customer phone number provided in the initial
+    query.
+  expected_output: Confirmation of successful message delivery via WhatsApp.
+  async_execution: false
+  agent: WhatsAppMessaging
+  context:
+  - generate_response_task
+log_interaction_task:
+  description: Log the entire interaction including the customer query, the classification
+    results, the data fetched from Shopify, and the final response sent. Store the
+    log in the Redis-based CRM using the configured environment variables (REDIS_URL,
+    REDIS_PASSWORD).
+  expected_output: A log entry in JSON format stored in Redis with all message details
+    and metadata.
+  async_execution: false
+  agent: CRMLogger
+  context:
+  - interpret_customer_query_task
+  - shopify_order_lookup_task
+  - shopify_product_lookup_task
+  - generate_response_task
