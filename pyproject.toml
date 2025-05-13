@@ -5,7 +5,12 @@ description = "automacao_assistente_loja_shopify_whatsapp_crm_dashboard using cr
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.13"
 dependencies = [
-    "crewai[tools]>=0.114.0,<1.0.0"
+    "crewai[tools]>=0.114.0,<1.0.0",
+    "streamlit>=1.30.0",
+    "redis>=5.0.0",
+    "pandas>=2.0.0",
+    "plotly>=5.18.0",
+    "shopify-api-python>=12.3.0"
 ]
 
 [project.scripts]
@@ -14,6 +19,7 @@ run_crew = "automacao_assistente_loja_shopify_whatsapp_crm_dashboard.main:run"
 train = "automacao_assistente_loja_shopify_whatsapp_crm_dashboard.main:train"
 replay = "automacao_assistente_loja_shopify_whatsapp_crm_dashboard.main:replay"
 test = "automacao_assistente_loja_shopify_whatsapp_crm_dashboard.main:test"
+streamlit_app = "automacao_assistente_loja_shopify_whatsapp_crm_dashboard.dashboard.app:main"
 
 [build-system]
 requires = ["hatchling"]
