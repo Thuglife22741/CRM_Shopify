@@ -1,7 +1,10 @@
 streamlit>=1.30.0
 pandas>=2.0.0
-plotly>=5.18.0
+plotly==5.18.0
+plotly-express==0.4.1
 redis>=5.0.0
 python-dotenv>=1.0.0
 shopify-api-python>=12.3.0
 crewai[tools]>=0.114.0,<1.0.0
+numpy>=1.24.0
+scipy>=1.10.0

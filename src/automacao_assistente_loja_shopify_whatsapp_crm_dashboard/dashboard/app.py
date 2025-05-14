@@ -8,17 +8,6 @@ import os
 import datetime
 from dotenv import load_dotenv
 
-# Carregar variáveis de ambiente
-load_dotenv()
-
-# Configuração da página
-st.set_page_config(
-    page_title="Shopify CRM WhatsApp Dashboard",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
 # Função para conectar ao Redis
 def connect_to_redis():
     try:
@@ -100,6 +89,17 @@ def load_whatsapp_conversations():
 
 # Função principal
 def main():
+    # Carregar variáveis de ambiente
+    load_dotenv()
+    
+    # Configuração da página
+    st.set_page_config(
+        page_title="Shopify CRM WhatsApp Dashboard",
+        page_icon="📊",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+    
     # Título do dashboard
     st.title("📊 Shopify CRM WhatsApp Dashboard")
     
