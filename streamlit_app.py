@@ -9,7 +9,18 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Importar diretamente o app.py da pasta dashboard
 try:
-    # Primeiro, tente importar o módulo plotly.express para garantir que está disponível
+    # Verificar se as dependências estão instaladas
+    try:
+        import plotly
+        import plotly.express
+    except ImportError:
+        import subprocess
+        import sys
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "plotly==5.18.0", "plotly-express==0.4.1"])
+        import plotly
+        import plotly.express
+    
+    # Importar os módulos necessários
     import plotly.express as px
     import plotly.graph_objects as go
     
