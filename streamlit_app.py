@@ -7,20 +7,41 @@ import os
 # Adicionar o diretório raiz ao path do Python para garantir que os imports funcionem
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Importar diretamente o app.py da pasta dashboard
+# Inicializar o ambiente e garantir que as dependências estejam instaladas
+from init_streamlit import initialize_environment
+initialize_environment()
+
+# Garantir que as dependências estejam instaladas antes de qualquer importação
 try:
-    # Verificar se as dependências estão instaladas
-    try:
-        import plotly
-        import plotly.express
-    except ImportError:
-        import subprocess
-        import sys
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "plotly==5.18.0", "plotly-express==0.4.1"])
-        import plotly
-        import plotly.express
+    # Verificar e instalar dependências necessárias
+    import importlib.util
+    import subprocess
     
-    # Importar os módulos necessários
+    # Função para verificar se um módulo está instalado
+    def is_module_installed(module_name):
+        return importlib.util.find_spec(module_name) is not None
+    
+    # Função para instalar um pacote se não estiver disponível
+    def ensure_package(package_name, version=None):
+        package_spec = f"{package_name}=={version}" if version else package_name
+        if not is_module_installed(package_name.split('[')[0]):
+            print(f"Instalando {package_spec}...")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package_spec, "--no-cache-dir"])
+            return True
+        return False
+    
+    # Atualizar pip primeiro
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip", "--no-cache-dir"])
+    
+    # Instalar dependências críticas
+    ensure_package("plotly", "5.18.0")
+    ensure_package("plotly-express", "0.4.1")
+    ensure_package("tenacity")
+    ensure_package("psutil")
+    ensure_package("retrying")
+    
+    # Agora importar os módulos necessários
+    import plotly
     import plotly.express as px
     import plotly.graph_objects as go
     
