@@ -9,7 +9,8 @@ dependencies = [
     "streamlit>=1.30.0",
     "redis>=5.0.0",
     "pandas>=2.0.0",
-    "plotly>=5.18.0",
+    "plotly==5.18.0",
+    "plotly-express==0.4.1",
     "shopify-api-python>=12.3.0"
 ]
 
